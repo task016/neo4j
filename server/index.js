@@ -42,6 +42,34 @@ const usersRouter = express.Router();
 
 app.use('/users', usersRouter);
 
+//SEARCH USERS
+usersRouter.get('/search',function(req,res){
+    const page = req.body.page - 1;
+    const searchTerm = req.body.searchTerm;
+
+    session
+    .run(`MATCH (u:User)
+            WHERE u.name =~ '(?i)${searchTerm}.*'
+            return u
+            ORDER BY u.id DESC
+            SKIP ${page*20}
+            LIMIT 20`)
+    .then(function(result){
+        if(result.records.length == 0)
+            res.send('No more users');
+        else{
+            let usersArr = result.records.map(function(record){
+                let user = record._fields[0].properties;
+                return {'name':user.name,'username':user.username};
+            });
+            res.send(usersArr);
+        }
+    })
+    .catch(function(err){
+        res.send(err);
+    });
+});
+
 //CREATE ACCOUNT
 usersRouter.post('/createAccount',function(req,res){
     const name = req.body.name;
