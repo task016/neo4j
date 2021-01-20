@@ -51,7 +51,7 @@ usersRouter.post('/createAccount',function(req,res){
     session
         .run(`CREATE (u:User {name:'${name}', username: '${username}', password: '${pass}'})`)
         .then(function(result){
-            res.send('User Created Successfully');
+            res.send({'name':name,'username':username,pass:'pass'});
         })
         .catch(function(err){
             res.send(err);
@@ -71,7 +71,7 @@ usersRouter.post('/login',function(req, res){
             }else{
                 const user = result.records[0]._fields[0].properties;
                 if(user.password == pass){
-                    res.send('Logged in');
+                    res.send({'name':user.name,'username':username});
                 }else{
                     res.send('Incorrect password');
                 }
