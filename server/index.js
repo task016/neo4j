@@ -42,6 +42,26 @@ const usersRouter = express.Router();
 
 app.use('/users', usersRouter);
 
+//GET USER
+usersRouter.get('/',function(req,res){
+    const username = req.body.username;
+
+    session
+    .run(`MATCH (u:User {username: '${username}'}) return u`)
+    .then(function(result){
+        if(result.records.length == 0)
+            res.send('No user with that username.');
+        else{
+            let user = result.records[0]._fields[0].properties;
+            user = {'name':user.name,'username':user.username};
+            res.send(user);
+        }
+    })
+    .catch(function(err){
+        res.send(err);
+    });
+});
+
 //SEARCH USERS
 usersRouter.get('/search',function(req,res){
     const page = req.body.page - 1;
