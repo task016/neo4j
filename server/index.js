@@ -240,6 +240,27 @@ const gamesRouter = express.Router();
 
 app.use('/games', gamesRouter);
 
+//ADD GAME
+gamesRouter.post('/Add', function (req, res) {
+  const name = req.body.name;
+  const rating = req.body.rating;
+  const price = req.body.price;
+  const gameId = req.body.gameId;
+  const desc = req.body.description;
+
+  session
+    .run(
+      `CREATE (g:Game {name:'${name}', rating: '${rating}', price: '${price}', id: '${gameId}', description: '${desc}'})`
+    )
+    .then(function (result) {
+      res.send({ name: name, rating: rating, price: price, gameId: gameId });
+    })
+    .catch(function (err) {
+      res.send(err);
+    });
+});
+
+
 //GET ALL GAMES
 gamesRouter.get('/', function (req, res) {
   const page = req.query.page - 1;
