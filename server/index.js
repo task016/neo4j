@@ -268,8 +268,8 @@ gamesRouter.get('/', function (req, res) {
 
 //SEARCH GAMES
 gamesRouter.get('/search', function (req, res) {
-  const page = req.body.page - 1;
-  const searchTerm = req.body.searchTerm;
+  const page = req.query.page - 1;
+  const searchTerm = req.query.searchTerm;
 
   session
     .run(
@@ -322,8 +322,8 @@ gamesRouter.get('/liked', function (req, res) {
 
 //GET RECOMMENDED GAMES FOR USER
 gamesRouter.get('/recommended', function (req, res) {
-  const username = req.body.username;
-  const free = req.body.free;
+  const username = req.query.username;
+  const free = req.query.free;
 
   session
     .run(
