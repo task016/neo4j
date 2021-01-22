@@ -127,7 +127,7 @@ class HomePage extends Component {
                 name={el.name}
                 description={el.description}
                 price={el.price}
-                id={el.gameId}
+                id={el.id}
                 key={index}
               />
             );

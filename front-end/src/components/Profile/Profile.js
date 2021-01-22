@@ -50,11 +50,9 @@ class Profile extends Component {
       });
     axios
       .get('http://localhost:8000/games/liked', {
+        headers: { 'Access-Control-Allow-Origin': '*' },
         params: {
           username: username,
-        },
-        headers: {
-          'Access-Controll-Allow-Origin': '*',
         },
       })
       .then((res) => {

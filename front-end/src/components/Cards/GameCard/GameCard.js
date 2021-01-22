@@ -5,6 +5,8 @@ import axios from 'axios';
 
 class GameCard extends Component {
   onLikeHandler = () => {
+    console.log(this.props.id);
+    console.log(this.props.user);
     axios
       .post(
         'http://localhost:8000/games/like',
@@ -24,6 +26,8 @@ class GameCard extends Component {
       });
   };
   onDislikeHandler = () => {
+    console.log(this.props.id);
+    console.log(this.props.user);
     axios
       .post(
         'http://localhost:8000/games/dislike',
@@ -52,8 +56,12 @@ class GameCard extends Component {
             <p className='pl-2 pb-1'>Price: {this.props.price}$</p>
           </Col>
           <Col className='d-flex justify-content-end pb-1'>
-            <Button className='mr-1'>Like</Button>
-            <Button variant='danger'>Dislike</Button>
+            <Button className='mr-1' onClick={this.onLikeHandler}>
+              Like
+            </Button>
+            <Button variant='danger' onClick={this.onDislikeHandler}>
+              Dislike
+            </Button>
           </Col>
         </Row>
       </Container>
