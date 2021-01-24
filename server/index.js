@@ -318,13 +318,12 @@ gamesRouter.get('/search', function (req, res) {
 //GET LIKED GAMES BY USER
 gamesRouter.get('/liked', function (req, res) {
   const username = req.query.username;
-
+  console.log(username);
   session
     .run(
       `MATCH (u:User {username:'${username}'})
             MATCH (u)-[:LIKES]->(g:Game)
-            return g
-            ORDER BY g.rating DESC`
+            return g`
     )
     .then(function (result) {
       if (result.records.length == 0)
@@ -333,6 +332,7 @@ gamesRouter.get('/liked', function (req, res) {
         let gamesArr = result.records.map(function (record) {
           return record._fields[0].properties;
         });
+        console.log(gamesArr);
         res.send(gamesArr);
       }
     })

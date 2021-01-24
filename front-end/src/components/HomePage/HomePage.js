@@ -102,7 +102,7 @@ class HomePage extends Component {
               <GameCard
                 name={el.name}
                 description={el.description}
-                id={el.gameId}
+                id={el.id}
                 price={el.price}
                 key={index}
               />
