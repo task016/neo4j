@@ -70,7 +70,7 @@ class Profile extends Component {
         console.log(err);
       });
     axios
-      .get('http://localhost:8000/games/liked', {
+      .get('http://localhost:8000/games/liked/', {
         headers: { 'Access-Control-Allow-Origin': '*' },
         params: {
           username: username,
