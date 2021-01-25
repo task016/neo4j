@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './HomePage.css';
 
-import { Col, Container, Row, Form, Button } from 'react-bootstrap';
+import { Col, Container, Row, Form, Button, Nav } from 'react-bootstrap';
 import Navbar from '../Navbar/Navbar';
 import Footer from '../Footer/Footer';
 import LoginModal from '../LoginModal/LoginModal';
@@ -20,9 +20,11 @@ class HomePage extends Component {
     signinModal: false,
     username: '',
     search: '',
+    page: 1,
     recommendedArray: null,
     searchArray: null,
     searchBool: false,
+    disabled: false,
   };
   componentDidMount() {
     this.setState({ username: this.props.username });
@@ -66,7 +68,7 @@ class HomePage extends Component {
           console.log(res);
           console.log(this.props.username);
           if (Array.isArray(res.data)) {
-            this.setState({ searchArray: res.data });
+            this.setState({ searchArray: res.data, page: this.state.page + 1 });
           }
         })
         .catch((err) => {
@@ -85,6 +87,49 @@ class HomePage extends Component {
   };
   onSigninFalseHandler = () => {
     this.setState({ signinModal: false });
+  };
+  onNextHandler = () => {
+    axios
+      .get('http://localhost:8000/games/search', {
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        params: {
+          page: this.state.page,
+          searchTerm: this.state.search,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        console.log(this.props.username);
+        if (Array.isArray(res.data)) {
+          this.setState({ searchArray: res.data, page: this.state.page + 1 });
+        } else if (res.data === 'No more games') {
+          this.setState({ disabled: true });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  onPrevHandler = () => {
+    const p = this.state.page - 2;
+    axios
+      .get('http://localhost:8000/games/search', {
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        params: {
+          page: p,
+          searchTerm: this.state.search,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        console.log(this.props.username);
+        if (Array.isArray(res.data)) {
+          this.setState({ searchArray: res.data, page: this.state.page + 1 });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   render() {
     let recommanded = null;
@@ -132,6 +177,22 @@ class HomePage extends Component {
               />
             );
           })}
+          <Row>
+            <Col className='mr-auto'>
+              {this.state.page > 2 ? (
+                <Nav.link onClick={this.onPrevHandler}>previous page</Nav.link>
+              ) : null}
+            </Col>
+            <Col className='d-flex justify-content-end'>
+              {this.state.disabled ? (
+                <Nav.Link onClick={this.onNextHandler} disabled>
+                  next page
+                </Nav.Link>
+              ) : (
+                <Nav.Link onClick={this.onNextHandler}>next page</Nav.Link>
+              )}
+            </Col>
+          </Row>
         </div>
       );
     } else {

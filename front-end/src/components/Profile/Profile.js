@@ -27,6 +27,27 @@ class Profile extends Component {
   onReRender = () => {
     this.forceUpdate();
   };
+  componentDidUpdate(prevProps, prevState) {
+    // Typical usage (don't forget to compare props):
+    if (this.state.username !== prevState.username) {
+      axios
+        .get('http://localhost:8000/games/liked', {
+          headers: { 'Access-Control-Allow-Origin': '*' },
+          params: {
+            username: this.state.username,
+          },
+        })
+        .then((res) => {
+          console.log(res);
+          if (Array.isArray(res.data)) {
+            this.setState({ likedArray: res.data });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }
   componentDidMount() {
     const username = this.props.match.params.username;
     console.log(this.props.match.params.username);
@@ -212,7 +233,7 @@ class Profile extends Component {
                 name={el.name}
                 description={el.description}
                 price={el.price}
-                id={el.gameId}
+                id={el.id}
                 key={index}
               />
             );
