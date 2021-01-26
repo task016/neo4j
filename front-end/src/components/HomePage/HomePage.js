@@ -68,7 +68,7 @@ class HomePage extends Component {
           console.log(res);
           console.log(this.props.username);
           if (Array.isArray(res.data)) {
-            this.setState({ searchArray: res.data, page: this.state.page + 1 });
+            this.setState({ searchArray: res.data });
           }
         })
         .catch((err) => {
@@ -89,19 +89,24 @@ class HomePage extends Component {
     this.setState({ signinModal: false });
   };
   onNextHandler = () => {
+    const pagePom = this.state.page + 1;
     axios
       .get('http://localhost:8000/games/search', {
         headers: { 'Access-Control-Allow-Origin': '*' },
         params: {
-          page: this.state.page,
+          page: pagePom,
           searchTerm: this.state.search,
         },
       })
       .then((res) => {
         console.log(res);
-        console.log(this.props.username);
         if (Array.isArray(res.data)) {
-          this.setState({ searchArray: res.data, page: this.state.page + 1 });
+          this.setState({
+            searchArray: res.data,
+            page: pagePom,
+            searchBool: true,
+          });
+          console.log(pagePom);
         } else if (res.data === 'No more games') {
           this.setState({ disabled: true });
         }
@@ -111,7 +116,7 @@ class HomePage extends Component {
       });
   };
   onPrevHandler = () => {
-    const p = this.state.page - 2;
+    const p = this.state.page - 1;
     axios
       .get('http://localhost:8000/games/search', {
         headers: { 'Access-Control-Allow-Origin': '*' },
@@ -124,7 +129,7 @@ class HomePage extends Component {
         console.log(res);
         console.log(this.props.username);
         if (Array.isArray(res.data)) {
-          this.setState({ searchArray: res.data, page: this.state.page + 1 });
+          this.setState({ searchArray: res.data, page: p });
         }
       })
       .catch((err) => {
@@ -157,6 +162,7 @@ class HomePage extends Component {
       );
     }
     let searched = null;
+    let pages = null;
     if (this.state.searchArray === null && this.state.searchBool) {
       searched = (
         <p className='pt-3 font-weight-light font-italic text-center'>
@@ -164,6 +170,39 @@ class HomePage extends Component {
         </p>
       );
     } else if (this.state.searchArray !== null && this.state.searchBool) {
+      let disabledPom = null;
+      let pagePom = null;
+
+      if (this.state.page > 1) {
+        pagePom = (
+          <Nav.Link onClick={this.onPrevHandler}>previous page</Nav.Link>
+        );
+      } else {
+        pagePom = (
+          <Nav.Link onClick={this.onPrevHandler} disabled>
+            previous page
+          </Nav.Link>
+        );
+      }
+      if (this.state.disabled) {
+        disabledPom = (
+          <Nav.Link onClick={this.onNextHandler} disabled>
+            next page
+          </Nav.Link>
+        );
+      } else {
+        disabledPom = (
+          <Nav.Link onClick={this.onNextHandler}>next page</Nav.Link>
+        );
+      }
+      pages = (
+        <Container>
+          <Row>
+            <Col className='d-flex justify-content-start'>{pagePom}</Col>
+            <Col className='d-flex justify-content-end'>{disabledPom}</Col>
+          </Row>
+        </Container>
+      );
       searched = (
         <div>
           {this.state.searchArray.map((el, index) => {
@@ -177,22 +216,6 @@ class HomePage extends Component {
               />
             );
           })}
-          <Row>
-            <Col className='mr-auto'>
-              {this.state.page > 2 ? (
-                <Nav.link onClick={this.onPrevHandler}>previous page</Nav.link>
-              ) : null}
-            </Col>
-            <Col className='d-flex justify-content-end'>
-              {this.state.disabled ? (
-                <Nav.Link onClick={this.onNextHandler} disabled>
-                  next page
-                </Nav.Link>
-              ) : (
-                <Nav.Link onClick={this.onNextHandler}>next page</Nav.Link>
-              )}
-            </Col>
-          </Row>
         </div>
       );
     } else {
@@ -303,7 +326,9 @@ class HomePage extends Component {
                 </Col>
               </Row>
               <Row>
-                <Col>{searched}</Col>
+                <Col>
+                  {searched} {pages}
+                </Col>
               </Row>
             </Container>
           </section>
