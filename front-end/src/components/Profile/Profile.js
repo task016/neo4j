@@ -69,22 +69,25 @@ class Profile extends Component {
       .catch((err) => {
         console.log(err);
       });
-    axios
-      .get('http://localhost:8000/games/liked/', {
-        headers: { 'Access-Control-Allow-Origin': '*' },
-        params: {
-          username: username,
-        },
-      })
-      .then((res) => {
-        console.log(res);
-        if (Array.isArray(res.data)) {
-          this.setState({ likedArray: res.data });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+
+    window.setTimeout(() => {
+      axios
+        .get('http://localhost:8000/games/liked/', {
+          headers: { 'Access-Control-Allow-Origin': '*' },
+          params: {
+            username: username,
+          },
+        })
+        .then((res) => {
+          console.log(res);
+          if (Array.isArray(res.data)) {
+            this.setState({ likedArray: res.data });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }, 100);
   }
   onSearchHandler = (event) => {
     const { name, value } = event.target;
